@@ -31,6 +31,36 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   //! END @TODO1
   
+  app.get("/filteredImage", (req, res) => {
+    const { image_url } = req.query;
+    // check if u-rl is provided
+    if (!image_url) {
+      res.status(400).send({message: ' You should provide image_url'});
+    }
+    
+    const urlExists = require('url-exists-deep');
+    urlExists(image_url).then((exists: Boolean) => {
+      // check if provided url is valid
+      if (!exists) {
+        return res.status(400).send('Url validation failed');
+      } else {
+        // filter the image from the provided url
+        filterImageFromURL(image_url)
+        .then( 
+          filtered_image => {
+            // send file in the respons, then delete
+            res.sendFile(filtered_image, () =>
+              deleteLocalFiles([filtered_image])
+            );
+          },
+          error => res.sendStatus(422).send("Something bad happened: Unable to process input image.")
+        ).catch (err => {
+          //console.error(err);
+          res.sendStatus(422).send("Something bad happened: Unable to process input image.");
+        });
+      }
+    });
+  });
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
