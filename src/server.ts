@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router, Request, Response }  from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -31,7 +31,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   //! END @TODO1
   
-  app.get("/filteredImage", (request:string, response:string) => {
+  app.get("/filteredImage", (request:Request, response:Response) => {
     const { image_url } = request.query;
     // check if u-rl is provided
     if (!image_url) {
